@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>EX4-52400237</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <title>Photo Slideshow</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</head>
+<body style="color: whitesmoke;">
+
+    <style>
+        * {
+            transition: all .3s ease-in-out;
+        }
+        .button-group {
+            display: flex;
+            gap: 10px;
+            flex-direction: column;
+        }
+        .button-group button {
+            padding: 8px 16px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .button-group button:disabled {
+            background-color: #6c757d;
+            cursor: not-allowed;
+        }
+        .button-group button:hover:not(:disabled) {
+            background-color: #0056b3;
+        }
+    </style>
+
+    <div class="container mt-5 mb-3 p-5 bg-dark text-white">
+        <div class="row justify-content-between align-items-center">
+            <select id="imageList" name="imageList" size="10">
+                <option value="pic_001.jpg">pic_001.jpg</option>
+                <option value="pic_002.jpg">pic_002.jpg</option>
+                <option value="pic_003.jpg">pic_003.jpg</option>
+                <option value="pic_004.jpg">pic_004.jpg</option>
+                <option value="pic_005.jpg">pic_005.jpg</option>
+                <option value="pic_006.jpg">pic_006.jpg</option>
+                <option value="pic_007.jpg">pic_007.jpg</option>
+                <option value="pic_008.jpg">pic_008.jpg</option>
+                <option value="pic_009.jpg">pic_009.jpg</option>
+                <option value="pic_010.jpg">pic_010.jpg</option>
+            </select>
+            <img src="images/pic_001.jpg" class="w-25 h-25 rounded-circle" alt="Slideshow Image">
+            <div class="button-group">
+                <button type="button" id="back">Back</button>
+                <button type="button" id="start">Start slideshow</button>
+                <button type="button" id="next">Next</button>
+            </div>
+            <p id="imageInfo">pic_001.jpg (01/10)</p>
+        </div>
+    </div>
+    
+    <script>
+        let imageList = document.getElementById('imageList');
+        let img = document.querySelector('img');
+        let back = document.getElementById('back');
+        let start = document.getElementById('start');
+        let next = document.getElementById('next');
+        let imageInfo = document.getElementById('imageInfo');
+
+        let interval = null;
+        let isSlideshow = false;
+
+        imageList.addEventListener('change', () => {
+            updateImage();
+        });
+
+        back.addEventListener('click', () => {
+            if (isSlideshow) {
+                clearInterval(interval);
+                isSlideshow = false;
+                start.innerText = 'Start slideshow';
+                back.disabled = false;
+                next.disabled = false;
+            }
+            
+            let index = imageList.selectedIndex;
+            if (index > 0) {
+                imageList.selectedIndex = index - 1;
+            } else {
+                imageList.selectedIndex = imageList.length - 1;
+            }
+            updateImage();
+        });
+
+        next.addEventListener('click', () => {
+            if (isSlideshow) {
+                clearInterval(interval);
+                isSlideshow = false;
+                start.innerText = 'Start slideshow';
+                back.disabled = false;
+                next.disabled = false;
+            }
+            
+            let index = imageList.selectedIndex;
+            if (index < imageList.length - 1) {
+                imageList.selectedIndex = index + 1;
+            } else {
+                imageList.selectedIndex = 0;
+            }
+            updateImage();
+        });
+
+        start.addEventListener('click', () => {
+            if (!isSlideshow) {
+                isSlideshow = true;
+                start.innerText = 'Stop slideshow';
+                back.disabled = true;
+                next.disabled = true;
+
+                interval = setInterval(() => {
+                    let index = imageList.selectedIndex;
+                    if (index < imageList.length - 1) {
+                        imageList.selectedIndex = index + 1;
+                    } else {
+                        imageList.selectedIndex = 0;
+                    }
+                    updateImage();
+                }, 1000);
+            } else {
+                clearInterval(interval);
+                isSlideshow = false;
+                start.innerText = 'Start slideshow';
+                back.disabled = false;
+                next.disabled = false;
+            }
+        });
+
+        function updateImage() {
+            img.src = 'images/' + imageList.value;
+            imageInfo.innerText = imageList.value + ' (' + String(imageList.selectedIndex + 1).padStart(2, '0') + '/10)';
+        }
+
+        updateImage();
+    </script>
+</body>
+</html>
